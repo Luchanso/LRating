@@ -2,4 +2,4 @@ LRatingClient/bin/
 LRatingClient/project.xml
 LRatingClient/LRatingClient.hxproj
 LRatingClient/tests/
-LRatingClient/Main.hx
+LRatingClient/src/com/luchanso/lrating/Main.hx
