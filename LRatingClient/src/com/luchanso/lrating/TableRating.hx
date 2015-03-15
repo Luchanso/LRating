@@ -30,7 +30,7 @@ class TableRating extends Sprite
 	var header:TextField;
 
 	public function new(width:Float, height:Float, headerText:String, bgColor:Int = 0xFFFFFF, color:Int = 0x56009D, 
-						hrColor:Int = 0xBCBCBC, rowHeight:Float = 20, alpha:Float = 1)
+						hrColor:Int = 0xBCBCBC, rowHeight:Float = 30, alpha:Float = 1)
 	{
 		super();
 		
