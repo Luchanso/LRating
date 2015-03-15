@@ -18,31 +18,54 @@ class TableRating extends Sprite
 	
 	static inline var hrThickness = 1;
 	
-	var color:Int;
+	var colorHeader:Int;
+	var colorScores:Int;
 	var heHeight:Float;
 	var rowHeight:Float;
 	
+	/**
+	 * Score list
+	 */
 	public var scores:Map<Int, Score>;
 	
-	public var bgColor:Int;	
+	/**
+	 * Background color
+	 */
+	public var bgColor:Int;
+	/**
+	 * Header text
+	 */
 	public var headerText(default, set):Float;
 	
 	var header:TextField;
-
-	public function new(width:Float, height:Float, headerText:String, bgColor:Int = 0xFFFFFF, color:Int = 0x56009D, 
-						hrColor:Int = 0xBCBCBC, rowHeight:Float = 30, alpha:Float = 1)
+	
+	/**
+	 * Visual table rating
+	 * @param	width
+	 * @param	height
+	 * @param	headerText
+	 * @param	bgColor - background color
+	 * @param	colorHeader - header text color
+	 * @param	colorScores - color rows text
+	 * @param	hrColor - separrator line color
+	 * @param	rowHeight
+	 * @param	alpha
+	 */
+	public function new(width:Float, height:Float, headerText:String, bgColor:Int = 0xFFFFFF, colorHeader:Int = 0x56009D, 
+						colorScores:Int = 0xEC0000,	hrColor:Int = 0xBCBCBC, rowHeight:Float = 30, alpha:Float = 1)
 	{
 		super();
 		
 		this.alpha = alpha;
-		this.color = color;
+		this.colorHeader = colorHeader;
+		this.colorScores = colorScores;
 		this.heHeight = rowHeight;
 		this.rowHeight = rowHeight;
 		
 		scores = new Map<Int, Score>();
 		
 		header = new TextField();
-		header.defaultTextFormat = new TextFormat(font, heSize, color);
+		header.defaultTextFormat = new TextFormat(font, heSize, this.colorHeader);
 		header.text = headerText;
 		header.autoSize = TextFieldAutoSize.LEFT;
 		header.x = heX;
@@ -61,11 +84,18 @@ class TableRating extends Sprite
 		addChild(header);
 	}
 	
-	public function addScore(username:String, score:String, position:Int, url:String)
+	/**
+	 * Added score in table
+	 * @param	username
+	 * @param	score
+	 * @param	position - position in table
+	 * @param	url
+	 */
+	public function addScore(username:String, score:String, position:Int, url:String = null)
 	{
 		var score = new Score(username, score, position, url);
 		
-		var scoreSprite = new ScoreSprite(score, width, rowHeight);
+		var scoreSprite = new ScoreSprite(score, width, rowHeight, 13, colorScores);
 		scoreSprite.x = 0;
 		scoreSprite.y = heHeight + rowHeight * Lambda.count(scores) + hrThickness;
 		
