@@ -14,11 +14,13 @@ class TableRating extends Sprite
 	
 	static inline var font = "Arial";
 	static inline var heSize = 15;
-	static inline var heX = 15;	
-	static inline var heHeight = 20;
-	static inline var hrThickness = 20;
+	static inline var heX = 15;
+	
+	static inline var hrThickness = 1;
 	
 	var color:Int;
+	var heHeight:Float;
+	var rowHeight:Float;
 	
 	public var scores:Map<Int, Score>;
 	
@@ -27,23 +29,26 @@ class TableRating extends Sprite
 	
 	var header:TextField;
 
-	public function new(width:Float, height:Float, headerText:String, bgColor:Int = 0xFFFFFF, color:Int = 0xFF0000, hrColor : Int = 1, alpha:Float = 1)
+	public function new(width:Float, height:Float, headerText:String, bgColor:Int = 0xFFFFFF, color:Int = 0x56009D, 
+						hrColor:Int = 0xBCBCBC, rowHeight:Float = 20, alpha:Float = 1)
 	{
 		super();
 		
-		scores = new List<Score>();
+		this.alpha = alpha;
+		this.color = color;
+		this.heHeight = rowHeight;
+		this.rowHeight = rowHeight;
+		
+		scores = new Map<Int, Score>();
 		
 		header = new TextField();
 		header.defaultTextFormat = new TextFormat(font, heSize, color);
-		header.text = "Header";
+		header.text = headerText;
 		header.autoSize = TextFieldAutoSize.LEFT;
 		header.x = heX;
 		header.y = heHeight / 2 - header.height / 2;
 		header.selectable = false;
 		header.mouseEnabled = false;
-		
-		this.alpha = alpha;
-		this.color = color;
 		
 		graphics.beginFill(bgColor);
 		graphics.drawRect(0, 0, width, height);
@@ -56,9 +61,17 @@ class TableRating extends Sprite
 		addChild(header);
 	}
 	
-	public function addScore(username:String, score:String, position:Int)
+	public function addScore(username:String, score:String, position:Int, url:String)
 	{
-		scores.set(position, new Score(username, score, position));
+		var score = new Score(username, score, position, url);
+		
+		var scoreSprite = new ScoreSprite(score, width, rowHeight);
+		scoreSprite.x = 0;
+		scoreSprite.y = heHeight + rowHeight * Lambda.count(scores) + hrThickness;
+		
+		scores.set(position, score);
+		
+		addChild(scoreSprite);
 	}
 	
 	function set_headerText(value:Float):Float 
