@@ -1,0 +1,12 @@
+{
+	"privateKey":"privateKey",
+	"privateClientKey":"privateClientKey",
+	"keySalt":"keySalt",
+	"tableSize": 20,
+	"bd":{
+		"host":"127.0.0.1",
+		"user":"root",
+		"pass":"",
+		"database":"games"
+	}
+}
