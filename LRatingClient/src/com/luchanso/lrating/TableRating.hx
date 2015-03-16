@@ -1,9 +1,17 @@
 package com.luchanso.lrating;
 
+import com.luchanso.lrating.server.IServer;
+import com.luchanso.lrating.TableRating.Server;
+import haxe.crypto.Md5;
+import haxe.remoting.AsyncProxy;
+import haxe.remoting.HttpAsyncConnection;
 import openfl.display.Sprite;
 import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFormat;
+
+class Server extends AsyncProxy<com.luchanso.lrating.server.IServer> {
+}
 
 /**
  * ...
@@ -11,6 +19,7 @@ import openfl.text.TextFormat;
  */
 class TableRating extends Sprite
 {
+	static inline var privateKey:String = "iNpXpdQ2IpuQ";
 	
 	static inline var font = "Arial";
 	static inline var heSize = 15;
@@ -18,10 +27,16 @@ class TableRating extends Sprite
 	
 	static inline var hrThickness = 1;
 	
-	var colorHeader:Int;
-	var colorScores:Int;
-	var heHeight:Float;
-	var rowHeight:Float;
+	var api 		:Server;
+	var serverHash 	:String;
+	var serverKey 	:String;
+	
+	var colorHeader	:Int;
+	var colorScores	:Int;
+	var heHeight	:Float;
+	var rowHeight	:Float;
+	
+	var gameName	:String;
 	
 	/**
 	 * Score list
@@ -51,10 +66,12 @@ class TableRating extends Sprite
 	 * @param	rowHeight
 	 * @param	alpha
 	 */
-	public function new(width:Float, height:Float, headerText:String, bgColor:Int = 0xFFFFFF, colorHeader:Int = 0x56009D, 
+	public function new(gameName:String, width:Float, height:Float, headerText:String, bgColor:Int = 0xFFFFFF, colorHeader:Int = 0x56009D, 
 						colorScores:Int = 0xEC0000,	hrColor:Int = 0xBCBCBC, rowHeight:Float = 30, alpha:Float = 1)
 	{
 		super();
+		
+		this.gameName = gameName;
 		
 		this.alpha = alpha;
 		this.colorHeader = colorHeader;
@@ -91,7 +108,7 @@ class TableRating extends Sprite
 	 * @param	position - position in table
 	 * @param	url
 	 */
-	public function addScore(username:String, score:String, position:Int, url:String = null)
+	public function addScore(username:String, score:Float, position:Int, url:String = null)
 	{
 		var score = new Score(username, score, position, url);
 		
@@ -102,6 +119,57 @@ class TableRating extends Sprite
 		scores.set(position, score);
 		
 		addChild(scoreSprite);
+	}
+	
+	public function addToServer(score:Score)
+	{
+		api.newRecord(score, gameName, Md5.encode(privateKey + serverHash + serverKey), serverHash, serverKey, finishAdd);
+	}
+	
+	function finishAdd(result:Bool) 
+	{
+	}
+	
+	public function checkExistToTop(score:Float):Bool
+	{
+		for (s in scores)
+		{
+			if (s.score < score.score)
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public function getDataFromServer(url:String)
+	{
+		var a = HttpAsyncConnection.urlConnect(url);
+		var scnx = a.resolve("server");
+		api = new Server(scnx);
+		
+		api.getServerHash(cbGetServerHash);
+		api.getServerKey(cbGetServerKey);
+		api.getTableRecords(gameName, addMapScore);
+	}
+	
+	function addMapScore(map:Map<Int, Score>)
+	{
+		for (score in map)
+		{
+			addScore(score.username, score.score, score.position, score.url);
+		}
+	}
+	
+	function cbGetServerKey(serverKey:String) 
+	{
+		this.serverKey = serverKey;
+	}
+	
+	function cbGetServerHash(serverHash:String) 
+	{
+		this.serverHash = serverHash;
 	}
 	
 	function set_headerText(value:Float):Float 
