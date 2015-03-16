@@ -7,11 +7,11 @@ package com.luchanso.lrating;
 class Score
 {
 	public var username:String;
-	public var score:String;
+	public var score:Float;
 	public var position:Int;
 	public var url:String;
 
-	public function new(?username:String, ?score:String, ?position:Int, ?url:String)
+	public function new(?username:String, ?score:Float, ?position:Int, ?url:String)
 	{
 		this.position = position;
 		this.score = score;
