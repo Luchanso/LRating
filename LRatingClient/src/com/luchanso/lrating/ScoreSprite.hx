@@ -34,7 +34,7 @@ class ScoreSprite extends Sprite
 		this.score = score;
 		this.url = score.url;
 		
-		if (score.url != null)
+		if (score.url != null && score.url != "")
 		{		
 			this.mouseEnabled = true;
 			this.buttonMode = true;
