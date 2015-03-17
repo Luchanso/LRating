@@ -16,7 +16,6 @@ class Main
 
 	static function main() 
 	{
-		Lib.print("Bad idea, my school friend. You have 2 chances, then you will be banned.");
 		var cnx = new Context();
 		cnx.addObject("server", new Server());
 		HttpConnection.handleRequest(cnx);		
