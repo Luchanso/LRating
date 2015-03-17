@@ -7,7 +7,7 @@ LRating
 ```
 haxelib git
 Library name : lrating
-Git path : https://github.com/Luchanso/LRating
+Git path : https://github.com/Luchanso/LRatingClient
 ```
  and add to your project.xml:
 
