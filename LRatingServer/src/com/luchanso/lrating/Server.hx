@@ -46,10 +46,12 @@ class Server implements IServer
 	public function newRecord(score:Score, game:String, hashSumm:String, serverHash:String, serverKey:String):Bool
 	{
 		if (Md5.encode(config.privateKey + serverKey) != serverHash)
-			throw("Bad security");
+		{			
+			throw("Bad security 101");
+		}
 			
 		if (Md5.encode(config.privateClientKey + serverHash + serverKey) != hashSumm)
-			throw("Bad security");
+			throw("Bad security 102");
 			
 		if (score.username.length > 64)
 			throw("Username is very long (max 64 symbols)");
@@ -62,7 +64,7 @@ class Server implements IServer
 		
 		var bdScore = new BdScore();
 		bdScore.userName = score.username;
-		bdScore.url = score.url;		
+		bdScore.url = score.url;
 		bdScore.score = score.score;
 		bdScore.insert();
 		
@@ -74,7 +76,8 @@ class Server implements IServer
 	function reCalcBaseDate()
 	{
 		var tableSize = cast (config.tableSize, Int);
-		BdScore.manager.delete(true, { orderBy : -score, limit : [tableSize, 1] } );
+		if (BdScore.manager.count(true) > config.tableSize)	
+			BdScore.manager.delete(true, { orderBy : -score, limit : [tableSize, 1] } );
 	}
 	
 	public function getTableRecords(game:String):Map<Int, Score>
@@ -92,14 +95,9 @@ class Server implements IServer
 		return scores;
 	}
 	
-	public function getServerHash():String
+	public function getServerData():Dynamic
 	{
-		return Md5.encode(config.privateKey + keyNow);
-	}
-	
-	public function getServerKey():String
-	{
-		return keyNow;
+		return { serverKey: keyNow, serverHash: Md5.encode(config.privateKey + keyNow) };
 	}
 	
 }
