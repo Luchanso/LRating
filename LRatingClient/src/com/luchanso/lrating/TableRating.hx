@@ -6,6 +6,8 @@ import haxe.crypto.Md5;
 import haxe.remoting.AsyncProxy;
 import haxe.remoting.HttpAsyncConnection;
 import openfl.display.Sprite;
+import openfl.events.Event;
+import openfl.events.MouseEvent;
 import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFormat;
@@ -101,6 +103,20 @@ class TableRating extends Sprite
 		graphics.lineTo(width, heHeight);
 		
 		addChild(header);
+		
+		this.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
+	}
+	
+	private function mouseMove(e:MouseEvent):Void 
+	{
+		/*if (e.localY < rowHeight * 2)
+		{
+			
+		}
+		else if (e.localY > this.height - rowHeight * 2)
+		{
+			
+		}*/
 	}
 	
 	/**
@@ -117,10 +133,7 @@ class TableRating extends Sprite
 		
 		var scoreSprite = new ScoreSprite(score, width - 1, rowHeight, 13, colorScores);
 		scoreSprite.x = 0;
-		
-		trace("Labda count: " + Lambda.count(scores));
-		scoreSprite.y = heHeight + rowHeight * Lambda.count(scores) + hrThickness;
-		trace("scoreSprite.y: " + scoreSprite.y);
+		scoreSprite.y = heHeight + rowHeight * Lambda.count(scores) + hrThickness;		
 		
 		scores.set(position, score);
 		
@@ -132,7 +145,7 @@ class TableRating extends Sprite
 		api.newRecord(score, gameName, Md5.encode(privateKey + serverHash + serverKey), serverHash, serverKey, finishAdd);
 	}
 	
-	function finishAdd(result:Bool) 
+	function finishAdd(result:Bool)
 	{
 	}
 	
