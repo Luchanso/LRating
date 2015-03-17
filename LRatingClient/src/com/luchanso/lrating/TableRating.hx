@@ -19,7 +19,6 @@ class Server extends AsyncProxy<com.luchanso.lrating.server.IServer> {
  */
 class TableRating extends Sprite
 {
-	static inline var privateKey:String = "iNpXpdQ2IpuQ";
 	
 	static inline var font = "Arial";
 	static inline var heSize = 15;
@@ -27,9 +26,12 @@ class TableRating extends Sprite
 	
 	static inline var hrThickness = 1;
 	
+	public var connectionCallback:Void -> Void;
+	
 	var api 		:Server;
 	var serverHash 	:String;
 	var serverKey 	:String;
+	var privateKey	:String;
 	
 	var colorHeader	:Int;
 	var colorScores	:Int;
@@ -91,7 +93,7 @@ class TableRating extends Sprite
 		header.mouseEnabled = false;
 		
 		graphics.beginFill(bgColor);
-		graphics.drawRect(0, 0, width, height);
+		graphics.drawRect(0, 0, width, rowHeight - 1);
 		graphics.endFill();
 		
 		graphics.lineStyle(hrThickness, hrColor);
@@ -112,9 +114,13 @@ class TableRating extends Sprite
 	{
 		var score = new Score(username, score, position, url);
 		
-		var scoreSprite = new ScoreSprite(score, width, rowHeight, 13, colorScores);
+		
+		var scoreSprite = new ScoreSprite(score, width - 1, rowHeight, 13, colorScores);
 		scoreSprite.x = 0;
+		
+		trace("Labda count: " + Lambda.count(scores));
 		scoreSprite.y = heHeight + rowHeight * Lambda.count(scores) + hrThickness;
+		trace("scoreSprite.y: " + scoreSprite.y);
 		
 		scores.set(position, score);
 		
@@ -134,7 +140,7 @@ class TableRating extends Sprite
 	{
 		for (s in scores)
 		{
-			if (s.score < score.score)
+			if (s.score < score)
 			{
 				return true;
 			}
@@ -143,14 +149,19 @@ class TableRating extends Sprite
 		return false;
 	}
 	
-	public function getDataFromServer(url:String)
+	public function connectToServer(url:String, privateKey:String)
 	{
+		this.privateKey = privateKey;
+		
 		var a = HttpAsyncConnection.urlConnect(url);
 		var scnx = a.resolve("server");
 		api = new Server(scnx);
 		
-		api.getServerHash(cbGetServerHash);
-		api.getServerKey(cbGetServerKey);
+		api.getServerData(getServerData);
+	}
+	
+	public function getDataFromServer()
+	{
 		api.getTableRecords(gameName, addMapScore);
 	}
 	
@@ -162,14 +173,12 @@ class TableRating extends Sprite
 		}
 	}
 	
-	function cbGetServerKey(serverKey:String) 
+	function getServerData(data:Dynamic) 
 	{
-		this.serverKey = serverKey;
-	}
-	
-	function cbGetServerHash(serverHash:String) 
-	{
-		this.serverHash = serverHash;
+		this.serverKey = data.serverKey;
+		this.serverHash = data.serverHash;
+		
+		connectionCallback();
 	}
 	
 	function set_headerText(value:Float):Float 
