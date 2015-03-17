@@ -20,10 +20,10 @@ class com_luchanso_lrating_Server implements com_luchanso_lrating_IServer{
 	public $keyNow;
 	public function newRecord($score, $game, $hashSumm, $serverHash, $serverKey) {
 		if(haxe_crypto_Md5::encode(Std::string($this->config->privateKey) . _hx_string_or_null($serverKey)) !== $serverHash) {
-			throw new HException("Bad security");
+			throw new HException("Bad security 101");
 		}
 		if(haxe_crypto_Md5::encode(Std::string($this->config->privateClientKey) . _hx_string_or_null($serverHash) . _hx_string_or_null($serverKey)) !== $hashSumm) {
-			throw new HException("Bad security");
+			throw new HException("Bad security 102");
 		}
 		if(strlen($score->username) > 64) {
 			throw new HException("Username is very long (max 64 symbols)");
@@ -44,7 +44,9 @@ class com_luchanso_lrating_Server implements com_luchanso_lrating_IServer{
 	public function reCalcBaseDate() {
 		$tableSize = null;
 		$tableSize = $this->config->tableSize;
-		com_luchanso_lrating_basedate_BdScore::$manager->unsafeDelete("DELETE FROM scores WHERE 1 ORDER BY score DESC LIMIT " . _hx_string_or_null(sys_db_Manager::quoteAny($tableSize)) . ",1");
+		if(com_luchanso_lrating_basedate_BdScore::$manager->unsafeCount("SELECT COUNT(*) FROM scores WHERE 1") > $this->config->tableSize) {
+			com_luchanso_lrating_basedate_BdScore::$manager->unsafeDelete("DELETE FROM scores WHERE 1 ORDER BY score DESC LIMIT " . _hx_string_or_null(sys_db_Manager::quoteAny($tableSize)) . ",1");
+		}
 	}
 	public function getTableRecords($game) {
 		$scores = new haxe_ds_IntMap();
@@ -64,11 +66,8 @@ class com_luchanso_lrating_Server implements com_luchanso_lrating_IServer{
 		}
 		return $scores;
 	}
-	public function getServerHash() {
-		return haxe_crypto_Md5::encode(Std::string($this->config->privateKey) . _hx_string_or_null($this->keyNow));
-	}
-	public function getServerKey() {
-		return $this->keyNow;
+	public function getServerData() {
+		return _hx_anonymous(array("serverKey" => $this->keyNow, "serverHash" => haxe_crypto_Md5::encode(Std::string($this->config->privateKey) . _hx_string_or_null($this->keyNow))));
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))

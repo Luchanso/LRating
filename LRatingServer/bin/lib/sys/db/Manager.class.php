@@ -318,6 +318,9 @@ class sys_db_Manager {
 		}
 		return $l2;
 	}
+	public function unsafeCount($sql) {
+		return $this->unsafeExecute($sql)->getIntResult(0);
+	}
 	public function unsafeDelete($sql) {
 		$this->unsafeExecute($sql);
 	}
