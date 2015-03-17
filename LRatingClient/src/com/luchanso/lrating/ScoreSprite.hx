@@ -43,7 +43,7 @@ class ScoreSprite extends Sprite
 		}
 		
 		graphics.beginFill(background);
-		graphics.drawRect(0, 0, width - 1, height);
+		graphics.drawRect(0, 0, width - 1, height - 1);
 		graphics.endFill();
 		
 		graphics.lineStyle(hrThickness, hrColor);
@@ -84,7 +84,7 @@ class ScoreSprite extends Sprite
 	
 	private function urlOpen(e:MouseEvent):Void 
 	{
-		if (url != null)
+		if (url != null && url != "")
 		{
 			Lib.getURL(new URLRequest(url));
 		}
