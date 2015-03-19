@@ -1,0 +1,14 @@
+{
+	"name": "LRating",
+	"url" : "https://github.com/Luchanso/LRating",
+	"license": "MIT",
+	"tags": ["openfl", "Table Score"],
+	"description": "Table Score library",
+	"version": "0.0.1",
+	"releasenote": "Initial release.",
+	"contributors": ["Luchanso"],
+	"dependencies": {
+		"openfl": "2.2.6",
+		"actuate": "1.8.2"
+	}
+}
